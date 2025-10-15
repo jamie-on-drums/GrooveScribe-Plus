@@ -7,4 +7,4 @@ src/mikeLessons.html
 src/cordova/plugins/
 src/.idea/
 node_modules
-distn
+dist
