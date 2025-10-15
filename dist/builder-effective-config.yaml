@@ -1,0 +1,21 @@
+directories:
+  output: dist
+  buildResources: build
+appId: com.groovescribe.desktop
+productName: GrooveScribe Desktop
+files:
+  - filter:
+      - main.js
+      - preload.js
+      - src/**/*
+      - node_modules/**/*
+win:
+  target: nsis
+  icon: assets/icon.ico
+mac:
+  target: dmg
+  icon: assets/icon.icns
+linux:
+  target: AppImage
+  icon: assets/icon.png
+electronVersion: 38.2.2
