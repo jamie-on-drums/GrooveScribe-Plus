@@ -1,43 +1,15 @@
-# README #
+# README
 
-Readme for Groove Scribe
+Readme for Groove Scribe Plus
 
-### What is this repository for? ###
+### What is this repository for?
 
-* Groove Scribe is an HTML application for drummers.    Groove Scribe is a point and click authoring system to create drum sheet music as well as a practice tool for learning and practicing grooves and exercises.
+**Groove Scribe Plus** is a Fork of [**Groove Scribe**](https://github.com/montulli/GrooveScribe) designed for power users who would like to use the software offline.
 
-### How do I use it ###
+For some context, as a drum educator, I've come to love using Groove Scribe for developing custom exercises and grooves to print out/send to students. With the spare time I have available, I intend to convert this codebase into an [Electron.JS](https://www.electronjs.org) project and add a variety of features befitting power users and educators.
 
-* Hosted here: http://www.mikeslessons.com/gscribe/
-* Also here: http://montulli.github.io/GrooveScribe/
+For a more comprehensive list of planned work, see [Issues](https://github.com/jamie-on-drums/GrooveScribe-Plus/issues)
 
-### How do I get set up? ###
+### How do I use it
 
-* Summary of set up:  Just host all the files on a web server.   The application runs entirely in the browser with Javascript, HTML & CSS.
-
-* Configuration: None
-
-* Dependencies
-    * Google's Leto font
-    * Google's url shortening api
-
-* Deployment instructions
-Deploy the files to an HTTP server.
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* File issues in github please:   https://github.com/montulli/GrooveScribe/issues
-* lou at montulli dot org is the admin and author.   He cannot answer every email, so please use good judgement before emailing.
-
-To edit this Readme:
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### See also ###
-
-* [SOURCE_CODE_README.md](SOURCE_CODE_README.md)
+\*Currently only available via building from source
