@@ -1,6 +1,6 @@
 {
   "name": "groovescribe-desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Desktop version of GrooveScribe - Sheet Music Creation and Practice Tool for drummers",
   "main": "main.js",
   "homepage": "./",

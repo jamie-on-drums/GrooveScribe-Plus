@@ -16,15 +16,34 @@ if (process.env.NODE_ENV === "development") {
 }
 
 let mainWindow;
+let splashWindow;
+
+function createSplash() {
+  splashWindow = new BrowserWindow({
+    width: 560,
+    height: 300,
+    frame: false,
+    resizable: false,
+    alwaysOnTop: true,
+    center: true,
+    show: true,
+    transparent: false,
+  });
+  splashWindow.loadFile(path.join(__dirname, "src", "splash.html"));
+  // prevent splash from creating new windows
+  splashWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+}
 
 function createWindow() {
-  // Create the browser window
+  // Create the browser window but do not show it until ready
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     minWidth: 800,
     minHeight: 600,
     autoHideMenuBar: true,
+    show: false, // start hidden
+    backgroundColor: "#f8f1ea", // match close to splash background to reduce flash
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -32,7 +51,7 @@ function createWindow() {
       preload: path.join(__dirname, "preload.js"),
       webSecurity: false, // Allow local file access for development
     },
-    icon: path.join(__dirname, "assets", "icon.png"), // Add icon later
+    icon: path.join(__dirname, "assets", "icon.png"),
     title: "GrooveScribe Desktop",
   });
 
@@ -43,6 +62,31 @@ function createWindow() {
   if (process.env.NODE_ENV === "development") {
     mainWindow.webContents.openDevTools();
   }
+
+  // Show window when ready and close splash
+  const showMainAndCloseSplash = () => {
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      try {
+        splashWindow.close();
+      } catch (e) {}
+      splashWindow = null;
+    }
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  };
+
+  // If available, prefer ready-to-show (helps with visual readiness)
+  mainWindow.once("ready-to-show", () => {
+    showMainAndCloseSplash();
+  });
+
+  // Fallback: when renderer finished loading
+  mainWindow.webContents.once("did-finish-load", () => {
+    // slight delay to avoid flicker if needed
+    setTimeout(showMainAndCloseSplash, 150);
+  });
 
   // Handle window closed
   mainWindow.on("closed", () => {
@@ -102,7 +146,10 @@ ipcMain.handle("export-file-dialog", async (event, data, fileType) => {
 });
 
 // App event handlers
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  createSplash();
+  createWindow();
+});
 
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
@@ -112,6 +159,7 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
+    createSplash();
     createWindow();
   }
 });
