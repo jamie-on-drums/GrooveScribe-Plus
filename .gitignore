@@ -1,8 +1,9 @@
-MIDI.js/js/MIDI/MIDI.JS.min.js
-js/groove_display.min.js
-js/groove_writer.min.js
-Lesson.css
-cordova/platforms/
-mikeLessons.html
-cordova/plugins/
-.idea/
+src/MIDI.js/js/MIDI/MIDI.JS.min.js
+src/js/groove_display.min.js
+src/js/groove_writer.min.js
+src/Lesson.css
+src/cordova/platforms/
+src/mikeLessons.html
+src/cordova/plugins/
+src/.idea/
+node_modules
