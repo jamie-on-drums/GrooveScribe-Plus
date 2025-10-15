@@ -26,12 +26,37 @@ function createSplash() {
     resizable: false,
     alwaysOnTop: true,
     center: true,
-    show: true,
+    show: false, // wait until content is ready-to-show
     transparent: false,
+    webPreferences: {
+      // keep defaults / secure: no node integration for splash
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
   });
+
+  splashWindow.removeMenu?.();
+
   splashWindow.loadFile(path.join(__dirname, "src", "splash.html"));
+
+  // show the splash only once it's ready to display (avoids white flash)
+  splashWindow.once("ready-to-show", () => {
+    if (splashWindow && !splashWindow.isDestroyed()) {
+      splashWindow.show();
+      // option: in dev show devtools for splash to debug assets
+      if (process.env.NODE_ENV === "development") {
+        // splashWindow.webContents.openDevTools({ mode: "detach" });
+      }
+    }
+  });
+
   // prevent splash from creating new windows
   splashWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+
+  // guard: if splash crashes or fails to load, ensure it's cleaned up
+  splashWindow.on("closed", () => {
+    splashWindow = null;
+  });
 }
 
 function createWindow() {
@@ -43,7 +68,7 @@ function createWindow() {
     minHeight: 600,
     autoHideMenuBar: true,
     show: false, // start hidden
-    backgroundColor: "#f8f1ea", // match close to splash background to reduce flash
+    backgroundColor: "#f8f1ea",
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -56,7 +81,7 @@ function createWindow() {
   });
 
   // Load the HTML file
-  mainWindow.loadFile("src/index.html");
+  mainWindow.loadFile(path.join(__dirname, "src", "index.html"));
 
   // Open DevTools in development
   if (process.env.NODE_ENV === "development") {
@@ -65,19 +90,26 @@ function createWindow() {
 
   // Show window when ready and close splash
   const showMainAndCloseSplash = () => {
+    // If splash exists but hasn't become visible yet, wait a short time
     if (splashWindow && !splashWindow.isDestroyed()) {
+      if (!splashWindow.isVisible()) {
+        // wait for splash to become visible to avoid white flash
+        setTimeout(showMainAndCloseSplash, 50);
+        return;
+      }
       try {
         splashWindow.close();
       } catch (e) {}
       splashWindow = null;
     }
+
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.show();
       mainWindow.focus();
     }
   };
 
-  // If available, prefer ready-to-show (helps with visual readiness)
+  // Prefer ready-to-show to display the main window when content is ready
   mainWindow.once("ready-to-show", () => {
     showMainAndCloseSplash();
   });
