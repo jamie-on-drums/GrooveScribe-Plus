@@ -971,6 +971,25 @@ function GrooveWriter() {
       percent_complete =
         (percent_complete * get_numberOfActivePermutationSections()) % 1.0;
 
+    // Use the same mapping array logic as the ABC viewer so editor
+    // highlighting matches subdivision and note mapping exactly.
+    try {
+      var mapping = root.myGrooveUtils.note_mapping_array;
+      if (mapping && mapping.length > 0) {
+        var curNoteIndex = Math.floor(percent_complete * mapping.length);
+        var real_note_index = -1;
+        for (var i = 0; i < curNoteIndex && i < mapping.length; i++) {
+          if (mapping[i]) real_note_index++;
+        }
+        hilight_all_notes_on_same_beat(instrument, real_note_index);
+        return;
+      }
+    } catch (e) {
+      // fall through to legacy calculation on error
+      console.log("highlight mapping error:", e);
+    }
+
+    // legacy fallback (shouldn't be used normally)
     var note_id_in_32 = Math.floor(
       percent_complete *
         root.myGrooveUtils.calc_notes_per_measure(
@@ -987,8 +1006,6 @@ function GrooveWriter() {
         class_num_beats_per_measure,
         class_note_value_per_measure
       );
-
-    //hilight_individual_note(instrument, id);
     hilight_all_notes_on_same_beat(instrument, real_note_id);
   }
 
