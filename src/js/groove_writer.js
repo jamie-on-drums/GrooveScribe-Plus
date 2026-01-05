@@ -5676,15 +5676,38 @@ function GrooveWriter() {
     numberOfMeasures
   ) {
     // set the size of the musicalInput authoring element based on the number of notes
-    if (
-      numNotesPerMeasure > 16 ||
-      (numNotesPerMeasure > 4 && class_number_of_measures > 1) ||
-      class_number_of_measures > 2
-    ) {
-      addOrRemoveKeywordFromClassById("musicalInput", "expanded", true);
-    } else {
-      addOrRemoveKeywordFromClassById("musicalInput", "expanded", false);
-    }
+    // Determine effective notes per measure from the passed value. Callers sometimes
+    // pass the division (e.g. 64) or the notes-per-measure; calc_notes_per_measure
+    // will return the correct notes-per-measure in either case for the current time signature.
+    var effectiveNotesPerMeasure = root.myGrooveUtils.calc_notes_per_measure(
+      numNotesPerMeasure,
+      class_num_beats_per_measure,
+      class_note_value_per_measure
+    );
+
+    // For extremely dense divisions (64ths and higher) stack measures vertically
+    // so additional measures load below instead of beside existing ones.
+    var shouldStackVertically = effectiveNotesPerMeasure >= 64;
+
+    // Use the passed numberOfMeasures parameter
+    var measures =
+      typeof numberOfMeasures === "number"
+        ? numberOfMeasures
+        : class_number_of_measures;
+
+    // normal expansion rules, but don't expand horizontally if we're stacking vertically
+    var shouldExpand =
+      (effectiveNotesPerMeasure > 16 ||
+        (effectiveNotesPerMeasure > 4 && measures > 1) ||
+        measures > 2) &&
+      !shouldStackVertically;
+
+    addOrRemoveKeywordFromClassById("musicalInput", "expanded", shouldExpand);
+    addOrRemoveKeywordFromClassById(
+      "musicalInput",
+      "stackVertical",
+      shouldStackVertically
+    );
   };
 
   // change the base division to something else.
